@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <title>ELECTRON</title>
+</head>
+<body>
+    <nav>
+        <div class="nav-wrapper">
+          <a href="#" class="brand-logo center">SOROLD FEL</a>
+        </div>
+      </nav>
+    <ul></ul>
+    
+    <script>
+        var sqlite3 = require('sqlite3').verbose();
+
+        (function initItems(){
+            let db = new sqlite3.Database('./Database/testDB.db', (err) => {
+                if (err) {
+                    console.error(err.message);
+                }
+            });    
+
+            const sql = "SELECT * FROM Lists";
+            db.all(sql, [], (err, rows) => {
+                if (err) {
+                    throw err;
+                }
+                rows.forEach((row) => {
+                    createListItem(row.id,row.list_items);
+                });
+            });
+
+            db.close();        
+        })();
+
+        function InsertDB(ListItem){
+            
+            let db = new sqlite3.Database('./Database/testDB.db', (err) => {
+                if (err) {
+                    console.error(err.message);
+                }
+            });       
+
+            db.run("CREATE TABLE if not exists Lists (id INTEGER PRIMARY KEY AUTOINCREMENT, list_items TEXT)");
+            let stmt = db.prepare("INSERT INTO Lists(list_items) VALUES (?)");
+            
+            let cb = stmt.run(ListItem, function (err) {
+                if (err) throw err;
+
+                const createdItem = createListItem(this.lastID, ListItem);
+                createdItem.addEventListener('dblclick', removeItem);
+            });
+            
+            stmt.finalize();
+            db.close();
+        }
+
+        const {ipcRenderer} = require('electron');
+        const ul = document.querySelector('ul');
+        
+        ipcRenderer.on('item:add', (e, item) => {
+            InsertDB(item);
+        });
+
+        ipcRenderer.on('item:clear', () => {
+            ul.innerHTML = '';
+            ul.className = '';
+        });
+
+        ul.addEventListener('dblclick', removeItem);
+
+        function removeItem(e){
+            e.target.remove();
+            if(!ul.children.length){
+                ul.className = '';
+            }
+
+            let db = new sqlite3.Database('./Database/testDB.db', (err) => {
+                if (err) {
+                    console.error(err.message);
+                }
+            }); 
+
+            let stmt = db.prepare("DELETE FROM Lists WHERE id = (?)");
+            stmt.run(e.target.id, function (err) {
+                if (err) throw err;
+            });
+            
+            stmt.finalize();
+            db.close();
+
+        };
+        
+        function createListItem(db_id, item){
+            ul.className = 'collection';
+            const li = document.createElement('li');
+            li.className = 'collection-item';
+            li.setAttribute("id", db_id);
+            const itemText = document.createTextNode(item);
+            const label = document.createElement('label');
+            const input = document.createElement('input');
+            const span = document.createElement('span');
+            span.appendChild(itemText);
+            input.type = 'checkbox';
+            label.appendChild(input)
+            label.appendChild(span)
+            li.appendChild(label);
+            ul.appendChild(li);
+
+            return li;
+        }
+
+    </script>
+    <!--<script src="db_js/db.js"></script>-->
+</body>
+</html>
