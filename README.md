@@ -10,7 +10,7 @@ ADDING package.json:
     .
     .
     .
-    "rebuild" "electron-rebuild -f -w sqlite3"
+    "rebuild": "electron-rebuild -f -w sqlite3"
   }
 
 npm run rebuild
