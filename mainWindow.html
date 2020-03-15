@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <link rel="stylesheet" href="./css/style.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <title>ELECTRON</title>
 </head>
 <body>
@@ -12,8 +14,9 @@
           <a href="#" class="brand-logo center">SOROLD FEL</a>
         </div>
       </nav>
-    <ul></ul>
-    
+
+      <ul></ul>
+
     <script>
         var sqlite3 = require('sqlite3').verbose();
 
@@ -48,7 +51,7 @@
             db.run("CREATE TABLE if not exists Lists (id INTEGER PRIMARY KEY AUTOINCREMENT, list_items TEXT)");
             let stmt = db.prepare("INSERT INTO Lists(list_items) VALUES (?)");
             
-            let cb = stmt.run(ListItem, function (err) {
+            stmt.run(ListItem, function (err) {
                 if (err) throw err;
 
                 const createdItem = createListItem(this.lastID, ListItem);
@@ -71,22 +74,21 @@
             ul.className = '';
         });
 
-        ul.addEventListener('dblclick', removeItem);
-
         function removeItem(e){
-            e.target.remove();
+
+            const itemToClear = e.target.closest('li')
+            itemToClear.remove();
+
             if(!ul.children.length){
                 ul.className = '';
             }
 
             let db = new sqlite3.Database('./Database/testDB.db', (err) => {
-                if (err) {
-                    console.error(err.message);
-                }
+                if (err)  throw err;
             }); 
 
             let stmt = db.prepare("DELETE FROM Lists WHERE id = (?)");
-            stmt.run(e.target.id, function (err) {
+            stmt.run(itemToClear.id, function (err) {
                 if (err) throw err;
             });
             
@@ -94,27 +96,53 @@
             db.close();
 
         };
-        
+/*
+        <li class="collection-item" id="n">
+            <label>
+                <input type="checkbox">
+                <span>text</span>
+            </label>
+            <span class='badge'>
+                <i class="material-icons">edit</i>
+                <i class="material-icons large">close</i>
+            </span>
+        </li>
+*/
         function createListItem(db_id, item){
             ul.className = 'collection';
             const li = document.createElement('li');
             li.className = 'collection-item';
             li.setAttribute("id", db_id);
+            
             const itemText = document.createTextNode(item);
             const label = document.createElement('label');
             const input = document.createElement('input');
             const span = document.createElement('span');
+
+            const span2 = document.createElement('span');
+            const i = document.createElement('i');
+            const i2 = document.createElement('i');
+
             span.appendChild(itemText);
+            span2.className = 'badge';
+            i.className = 'material-icons';
+            i2.className = 'material-icons';
+            i.appendChild(document.createTextNode('edit'));
+            i2.appendChild(document.createTextNode('clear'));
+            i2.classList.add("clearItem");
+            i2.addEventListener('click', removeItem);
             input.type = 'checkbox';
-            label.appendChild(input)
-            label.appendChild(span)
+            label.appendChild(input);
+            label.appendChild(span);
+            span2.appendChild(i);
+            span2.appendChild(i2);
             li.appendChild(label);
+            li.appendChild(span2);
             ul.appendChild(li);
 
             return li;
         }
 
     </script>
-    <!--<script src="db_js/db.js"></script>-->
 </body>
 </html>
