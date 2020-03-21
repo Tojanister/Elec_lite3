@@ -7,7 +7,9 @@ let mainWindow;
 let addWindow;
 
 //listen on app to be ready
-app.on('ready', () => {
+app.on('ready', initLandingPage);
+
+function initLandingPage(){
 
     //Ha használatban van egy shortcut GlobalShortcut-tal lehet felülírni
     //globalShortcut.register('Ctrl+A', () => createAddWindow());
@@ -20,7 +22,8 @@ app.on('ready', () => {
     }); 
     //load html into window | mainWindow.loadFile('mainWindow.html')
     mainWindow.loadURL(url.format({
-        pathname: path.join(__dirname, 'mainWindow.html'),
+        //pathname: path.join(__dirname, 'mainWindow.html'),
+        pathname: path.join(__dirname, 'landingWindow.html'),
         protocol: 'file:',
         slashes: true
     }));
@@ -35,7 +38,7 @@ app.on('ready', () => {
     const mainMenu = Menu.buildFromTemplate(mainMenuTemplate);
     //Insert menu
     Menu.setApplicationMenu(mainMenu);
-});
+}
 
 function createAddWindow(){
     addWindow = new BrowserWindow({
@@ -67,9 +70,35 @@ ipcMain.on('item:add', (e, item) =>{
     mainWindow.webContents.send('item:add', item);
     addWindow.close();
 })
+ipcMain.on('routing:workers', (e) =>{
+
+    //Build menu from tempalte
+    const workerMainMenu = Menu.buildFromTemplate(workersMenuTemplate);
+    //Insert menu
+    Menu.setApplicationMenu(workerMainMenu);
+    mainWindow.loadURL(url.format({
+        pathname: path.join(__dirname, 'mainWindow.html'),
+        protocol: 'file:',
+        slashes: true
+    }));
+
+})
+ipcMain.on('routing:landing', (e) =>{
+
+    //Build menu from tempalte
+    const mainMenu = Menu.buildFromTemplate(mainMenuTemplate);
+    //Insert menu
+    Menu.setApplicationMenu(mainMenu);
+
+    mainWindow.loadURL(url.format({
+        pathname: path.join(__dirname, 'landingWindow.html'),
+        protocol: 'file:',
+        slashes: true
+    }));
+})
 
 //create menu tempalte
-const mainMenuTemplate = [
+const workersMenuTemplate = [
     {
         label: 'File',
         submenu: [
@@ -96,15 +125,29 @@ const mainMenuTemplate = [
         ]
     }
 ];
-
+const mainMenuTemplate = [
+    {
+        label: 'File',
+        submenu: [
+            {
+                label: 'Quit',
+                accelerator: process.platform=='darwin' ? 'Command+Q' : 'Ctrl+Q',
+                click(){
+                    app.quit();
+                }
+            }
+        ]
+    }
+];
 //if Mac add empty object to Menu
 if (process.platform == 'darwin') {
     mainMenuTemplate.unshift({});
+    workersMenuTemplate.unshift({});
 }
 
 //Add developer tools item if not prod mode
 if(process.env.NODE_ENV !== 'production'){
-    mainMenuTemplate.push({
+    const devTool = {
         label: 'Developer tools',
         submenu : [
             {
@@ -119,5 +162,7 @@ if(process.env.NODE_ENV !== 'production'){
                 role: 'reload'
             }
         ]
-    })
+    };
+    workersMenuTemplate.push(devTool);
+    mainMenuTemplate.push(devTool);
 }

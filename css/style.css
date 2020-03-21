@@ -1,3 +1,10 @@
 .collection-item .material-icons{
     cursor: pointer;
 };
+
+.nav-wrapper .waves-effect i.material-icons.left{
+    margin-right: 0px;
+}
+.nav-wrapper a.waves-effect{
+    margin-left: 2%;
+}

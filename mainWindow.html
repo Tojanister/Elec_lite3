@@ -11,6 +11,7 @@
 <body>
     <nav>
         <div class="nav-wrapper">
+            <a id="back_button" class="waves-effect waves-light"><i class="material-icons left">keyboard_arrow_left</i>Vissza</a>
           <a href="#" class="brand-logo center">SOROLD FEL</a>
         </div>
       </nav>
@@ -18,6 +19,14 @@
       <ul></ul>
 
     <script>
+        const backButton = document.getElementById("back_button");
+        backButton.addEventListener('click', backToLanding)
+
+        function backToLanding(e){
+            e.preventDefault();
+            ipcRenderer.send('routing:landing');
+        }
+
         var sqlite3 = require('sqlite3').verbose();
 
         (function initItems(){
@@ -96,6 +105,8 @@
             db.close();
 
         };
+        
+        
 /*
         <li class="collection-item" id="n">
             <label>
