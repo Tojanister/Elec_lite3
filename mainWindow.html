@@ -48,8 +48,8 @@
                 }
             });       
 
-            db.run("CREATE TABLE if not exists Lists (id INTEGER PRIMARY KEY AUTOINCREMENT, list_items TEXT)");
-            let stmt = db.prepare("INSERT INTO Lists(list_items) VALUES (?)");
+            db.run("CREATE TABLE if not exists Lists (id INTEGER PRIMARY KEY AUTOINCREMENT, is_done INTEGER NOT NULL, list_items TEXT)");
+            let stmt = db.prepare("INSERT INTO Lists(is_done, list_items) VALUES (0, ?)");
             
             stmt.run(ListItem, function (err) {
                 if (err) throw err;
