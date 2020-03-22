@@ -36,19 +36,21 @@
                 }
             });    
 
-            const sql = "SELECT * FROM Lists";
+            //const sql = "SELECT * FROM Lists";
+            const sql = "SELECT * FROM Employees";
             db.all(sql, [], (err, rows) => {
                 if (err) {
                     throw err;
                 }
                 rows.forEach((row) => {
-                    createListItem(row.id,row.list_items);
+                    //createListItem(row.id,row.list_items);
+                    createListItem(row.id,row.first_name + ' ' + row.last_name);
                 });
             });
 
             db.close();        
         })();
-
+        /*
         function InsertDB(ListItem){
             
             let db = new sqlite3.Database('./Database/testDB.db', (err) => {
@@ -56,26 +58,47 @@
                     console.error(err.message);
                 }
             });       
-
             db.run("CREATE TABLE if not exists Lists (id INTEGER PRIMARY KEY AUTOINCREMENT, is_done INTEGER NOT NULL, list_items TEXT)");
             let stmt = db.prepare("INSERT INTO Lists(is_done, list_items) VALUES (0, ?)");
             
             stmt.run(ListItem, function (err) {
                 if (err) throw err;
 
-                const createdItem = createListItem(this.lastID, ListItem);
-                createdItem.addEventListener('dblclick', removeItem);
+                createListItem(this.lastID, ListItem);
             });
             
             stmt.finalize();
             db.close();
         }
+        */
+        function InsertDB(person){
+            
+            let db = new sqlite3.Database('./Database/testDB.db', (err) => {
+                if (err) {
+                    console.error(err.message);
+                }
+            });       
+            db.run("CREATE TABLE if not exists Employees (id INTEGER PRIMARY KEY AUTOINCREMENT, first_name TEXT NOT NULL, last_name TEXT NOT NULL, birth_date TEXT, email TEXT)");
+            let stmt = db.prepare("INSERT INTO Employees (first_name, last_name, birth_date, email) VALUES (?, ?, ?, ?)");            
+            stmt.run(person, function (err) {
+                if (err) throw err;
 
+                const fullName = person[0] + person[1];
+                createListItem(this.lastID, fullName);
+            });
+            
+            stmt.finalize();
+            db.close();
+        }
         const {ipcRenderer} = require('electron');
         const ul = document.querySelector('ul');
-        
+        /*
         ipcRenderer.on('item:add', (e, item) => {
             InsertDB(item);
+        });
+        */
+        ipcRenderer.on('employee:add', (e, personalData) => {
+            InsertDB(personalData);
         });
 
         ipcRenderer.on('item:clear', () => {
@@ -85,7 +108,7 @@
 
         function removeItem(e){
 
-            const itemToClear = e.target.closest('li')
+            const itemToClear = e.target.closest('li');
             itemToClear.remove();
 
             if(!ul.children.length){
@@ -96,7 +119,8 @@
                 if (err)  throw err;
             }); 
 
-            let stmt = db.prepare("DELETE FROM Lists WHERE id = (?)");
+            //let stmt = db.prepare("DELETE FROM Lists WHERE id = (?)");
+            let stmt = db.prepare("DELETE FROM Employees WHERE id = (?)");
             stmt.run(itemToClear.id, function (err) {
                 if (err) throw err;
             });
@@ -106,52 +130,22 @@
 
         };
         
-        
-/*
-        <li class="collection-item" id="n">
-            <label>
-                <input type="checkbox">
-                <span>text</span>
-            </label>
-            <span class='badge'>
-                <i class="material-icons">edit</i>
-                <i class="material-icons large">close</i>
-            </span>
-        </li>
-*/
         function createListItem(db_id, item){
+            let tempRow = `<li class="collection-item" id="${db_id}">
+                <label>
+                    <input type="checkbox"><span>${item}</span>
+                </label>
+                <span class="badge">
+                    <i class="material-icons">edit</i>
+                    <i id="clearItem" class="material-icons">clear</i>
+                </span>
+            </li>`
+            const ul = document.querySelector('ul');
             ul.className = 'collection';
-            const li = document.createElement('li');
-            li.className = 'collection-item';
-            li.setAttribute("id", db_id);
-            
-            const itemText = document.createTextNode(item);
-            const label = document.createElement('label');
-            const input = document.createElement('input');
-            const span = document.createElement('span');
+            ul.innerHTML += tempRow;
 
-            const span2 = document.createElement('span');
-            const i = document.createElement('i');
-            const i2 = document.createElement('i');
+            document.getElementById(db_id).addEventListener('click', removeItem);
 
-            span.appendChild(itemText);
-            span2.className = 'badge';
-            i.className = 'material-icons';
-            i2.className = 'material-icons';
-            i.appendChild(document.createTextNode('edit'));
-            i2.appendChild(document.createTextNode('clear'));
-            i2.classList.add("clearItem");
-            i2.addEventListener('click', removeItem);
-            input.type = 'checkbox';
-            label.appendChild(input);
-            label.appendChild(span);
-            span2.appendChild(i);
-            span2.appendChild(i2);
-            li.appendChild(label);
-            li.appendChild(span2);
-            ul.appendChild(li);
-
-            return li;
         }
 
     </script>

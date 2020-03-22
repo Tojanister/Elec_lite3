@@ -42,15 +42,16 @@ function initLandingPage(){
 
 function createAddWindow(){
     addWindow = new BrowserWindow({
-        width: 300,
-        height: 200,
-        Title: 'Add Shopping List Item',
+        //width: 600,
+        //height: 400,
+        Title: 'Alkalmazott hozzáadása',
         webPreferences: {
             nodeIntegration: true
         }
     }); 
     addWindow.loadURL(url.format({
-        pathname: path.join(__dirname, 'addWindow.html'),
+        //pathname: path.join(__dirname, 'addWindow.html'),
+        pathname: path.join(__dirname, 'addEmployeeWindow.html'),
         protocol: 'file:',
         slashes: true
     }));
@@ -70,6 +71,11 @@ ipcMain.on('item:add', (e, item) =>{
     mainWindow.webContents.send('item:add', item);
     addWindow.close();
 })
+ipcMain.on('employee:add', (e, personalData) =>{
+    mainWindow.webContents.send('employee:add', personalData);
+    addWindow.close();
+})
+
 ipcMain.on('routing:workers', (e) =>{
 
     //Build menu from tempalte
