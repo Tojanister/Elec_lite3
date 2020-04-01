@@ -49,6 +49,12 @@ function createAddWindow(){
             nodeIntegration: true
         }
     }); 
+
+    // //Build menu from tempalte
+    // let addMenu = Menu.buildFromTemplate(devToolMenu);
+    // //Insert menu
+    // Menu.setApplicationMenu(addMenu);
+
     addWindow.loadURL(url.format({
         //pathname: path.join(__dirname, 'addWindow.html'),
         pathname: path.join(__dirname, 'addEmployeeWindow.html'),
@@ -56,7 +62,7 @@ function createAddWindow(){
         slashes: true
     }));
 
-    addWindow.removeMenu();
+    //addWindow.removeMenu();
 
     //Garage collection
     addWindow.on('close',() => {
@@ -150,7 +156,24 @@ if (process.platform == 'darwin') {
     mainMenuTemplate.unshift({});
     workersMenuTemplate.unshift({});
 }
-
+// let devToolMenu = [
+//     {
+//         label: 'Developer tools',
+//         submenu : [
+//             {
+//                 label: 'Toggle DevTools',
+//                 accelerator: process.platform=='darwin' ? 'Command+I' : 'Ctrl+I',
+//                 click(item, focusedWindow){
+//                     //focusedWindow.webContents.openDevTools()
+//                     focusedWindow.toggleDevTools();
+//                 }
+//             },
+//             {
+//                 role: 'reload'
+//             }
+//         ]
+//     }
+// ]
 //Add developer tools item if not prod mode
 if(process.env.NODE_ENV !== 'production'){
     const devTool = {
@@ -169,6 +192,7 @@ if(process.env.NODE_ENV !== 'production'){
             }
         ]
     };
+    
     workersMenuTemplate.push(devTool);
     mainMenuTemplate.push(devTool);
 }

@@ -32,45 +32,36 @@
         (function initItems(){
             let db = new sqlite3.Database('./Database/testDB.db', (err) => {
                 if (err) {
-                    console.error(err.message);
+                    var fs = require('fs');
+                    fs.open('./Database/testDB.db', 'w', (err, file) => {
+                        if (err) throw err;
+                        fs.close(file);
+                    });
+                    /*
+                    db = new sqlite3.Database('./Database/testDB.db');
+                    db.run("CREATE TABLE if not exists Employees (id INTEGER PRIMARY KEY AUTOINCREMENT, first_name TEXT NOT NULL, last_name TEXT NOT NULL, birth_date TEXT, email TEXT)");
+                    console.log("asd",db)
+                    */
                 }
             });    
-
-            //const sql = "SELECT * FROM Lists";
+            console.log("db:",db);
+            db.run("CREATE TABLE if not exists Employees (id INTEGER PRIMARY KEY AUTOINCREMENT, first_name TEXT NOT NULL, last_name TEXT NOT NULL, birth_date TEXT, email TEXT)");
+            
             const sql = "SELECT * FROM Employees";
             db.all(sql, [], (err, rows) => {
                 if (err) {
-                    throw err;
+                    console.log(err);
+                }else{
+                    rows.forEach((row) => {
+                        //createListItem(row.id,row.list_items);
+                        createListItem(row.id,row.first_name + ' ' + row.last_name);
+                    });
                 }
-                rows.forEach((row) => {
-                    //createListItem(row.id,row.list_items);
-                    createListItem(row.id,row.first_name + ' ' + row.last_name);
-                });
             });
 
             db.close();        
         })();
-        /*
-        function InsertDB(ListItem){
-            
-            let db = new sqlite3.Database('./Database/testDB.db', (err) => {
-                if (err) {
-                    console.error(err.message);
-                }
-            });       
-            db.run("CREATE TABLE if not exists Lists (id INTEGER PRIMARY KEY AUTOINCREMENT, is_done INTEGER NOT NULL, list_items TEXT)");
-            let stmt = db.prepare("INSERT INTO Lists(is_done, list_items) VALUES (0, ?)");
-            
-            stmt.run(ListItem, function (err) {
-                if (err) throw err;
 
-                createListItem(this.lastID, ListItem);
-            });
-            
-            stmt.finalize();
-            db.close();
-        }
-        */
         function InsertDB(person){
             
             let db = new sqlite3.Database('./Database/testDB.db', (err) => {
@@ -78,7 +69,7 @@
                     console.error(err.message);
                 }
             });       
-            db.run("CREATE TABLE if not exists Employees (id INTEGER PRIMARY KEY AUTOINCREMENT, first_name TEXT NOT NULL, last_name TEXT NOT NULL, birth_date TEXT, email TEXT)");
+            //db.run("CREATE TABLE if not exists Employees (id INTEGER PRIMARY KEY AUTOINCREMENT, first_name TEXT NOT NULL, last_name TEXT NOT NULL, birth_date TEXT, email TEXT)");
             let stmt = db.prepare("INSERT INTO Employees (first_name, last_name, birth_date, email) VALUES (?, ?, ?, ?)");            
             stmt.run(person, function (err) {
                 if (err) throw err;
@@ -131,9 +122,10 @@
         };
         
         function createListItem(db_id, item){
+        
             let tempRow = `<li class="collection-item" id="${db_id}">
                 <label>
-                    <input type="checkbox"><span>${item}</span>
+                    <span>${item}</span>
                 </label>
                 <span class="badge">
                     <i class="material-icons">edit</i>
@@ -144,8 +136,8 @@
             ul.className = 'collection';
             ul.innerHTML += tempRow;
 
-            document.getElementById(db_id).addEventListener('click', removeItem);
-
+            let currItem = document.querySelector("li[id*='" + db_id +"'] i[id*='clearItem']");
+            currItem.addEventListener('click', removeItem);
         }
 
     </script>

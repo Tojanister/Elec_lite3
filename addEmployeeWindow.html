@@ -43,12 +43,19 @@
             var options = {
                 defaultDate: new Date(),
                 setDefaultDate: true,
+                maxDate: new Date(),
+                minDate: new Date('1950-01-01'),
+                yearRange: [1950,2020],
+                changeMonth: true,
+                changeYear: true,
+                //format: 'dd-mm-yyyy',
+                format: 'yyyy-mm-dd',
                 i18n: {
                     cancel: 'Mégse',
                     clear: 'Törlés',
                     done: 'Választ',
                     months: ["Január", "Február", "Március", "Április", "Május", "Június", "Július", "Augusztus", "Szeptember", "Október", "November", "December"],
-                    monthsShort: ["Jan", "Feb", "Mar", "Ápr", "May", "Jún", "Júl", "Aug", "Szep", "Okt", "Nov", "Dec"],
+                    monthsShort: ["Jan", "Feb", "Mar", "Ápr", "Máj", "Jún", "Júl", "Aug", "Szep", "Okt", "Nov", "Dec"],
                     weekdays: ["Vasárnap","Hétfő", "Kedd", "Szerda", "Csütörtök", "Péntek", "Szombat"],
                     weekdaysShort: ["Vas","Hétfő", "Kedd", "Szer", "Csüt", "Pént", "Szom"],
                     weekdaysAbbrev: ["V","H", "K", "Sz", "Cs", "P", "Szo"]                    
@@ -59,6 +66,7 @@
             // instance.open();
             //instance.setDate(new Date(2018, 2, 8));
             instance.setDate(new Date());
+            //instance.options.minDate = new Date('1950-01-01');
         });
 
         const {ipcRenderer} = require('electron');
