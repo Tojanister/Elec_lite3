@@ -6,12 +6,14 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <link rel="stylesheet" href="./css/style.css">
     <title>Alkalmazott hozzáadása</title>
 </head>
 <body>
 
     <div class="row">
         <form class="col s12">
+          <input id="curr_ID_hid" type="hidden">
           <div class="row">
             <div class="input-field col s4">
               <i class="material-icons prefix">account_circle</i>
@@ -39,6 +41,10 @@
       </div>    
 
     <script>
+
+      const isEditable = (document.getElementById("curr_ID_hid").value != "") ? true : false;
+      console.log(isEditable);
+
         document.addEventListener('DOMContentLoaded', function () {
             var options = {
                 defaultDate: new Date(),

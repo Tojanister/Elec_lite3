@@ -8,3 +8,51 @@
 .nav-wrapper a.waves-effect{
     margin-left: 2%;
 }
+
+body{
+    background-color: #444;
+}
+.nav-wrapper{
+    /*background-color: #26a69a;*/
+    background-color: #03DAC6;  
+}
+
+.nav-wrapper a{
+    color: #000;
+}
+
+input{
+    color: #03DAC6;
+}
+
+.datepicker-calendar-container{
+    background-color: #444;
+}
+
+.datepicker-table td:not(.is-disabled){
+    color: #fff;
+}
+.datepicker-date-display{
+    color: #444;
+}
+label{
+    font-size: 1rem;
+    color: #fff;
+}
+.collection .collection-item {
+    background-color: #5a5a5a;
+    color: #fff;
+    border-bottom: 0.5px solid #9e9e9e;
+}
+.collection {
+    border: 1px solid #9e9e9e;
+}
+span.badge {
+    color: #fff;
+}
+ul.collection{
+    margin: 1%;
+}
+label:hover, i:hover{
+    color: #03DAC6;
+}

@@ -11,15 +11,15 @@
 <body>
     <nav>
         <div class="nav-wrapper">
-            <a id="back_button" class="waves-effect waves-light"><i class="material-icons left">keyboard_arrow_left</i>Vissza</a>
-          <a href="#" class="brand-logo center">SOROLD FEL</a>
+            <a id="backBtn" class="waves-effect waves-light"><i class="material-icons left">keyboard_arrow_left</i>Vissza</a>
+          <a href="#" class="brand-logo center">Munkavállalók listája</a>
         </div>
       </nav>
 
       <ul></ul>
 
     <script>
-        const backButton = document.getElementById("back_button");
+        const backButton = document.getElementById("backBtn");
         backButton.addEventListener('click', backToLanding)
 
         function backToLanding(e){
@@ -44,7 +44,7 @@
                     */
                 }
             });    
-            console.log("db:",db);
+
             db.run("CREATE TABLE if not exists Employees (id INTEGER PRIMARY KEY AUTOINCREMENT, first_name TEXT NOT NULL, last_name TEXT NOT NULL, birth_date TEXT, email TEXT)");
             
             const sql = "SELECT * FROM Employees";
@@ -74,7 +74,7 @@
             stmt.run(person, function (err) {
                 if (err) throw err;
 
-                const fullName = person[0] + person[1];
+                let fullName = person[0] + ' ' + person[1];
                 createListItem(this.lastID, fullName);
             });
             
@@ -97,9 +97,11 @@
             ul.className = '';
         });
 
-        function removeItem(e){
+        function removeItem(elem){
 
-            const itemToClear = e.target.closest('li');
+            //const itemToClear = document.getElementById(db_id.toString());
+            // const itemToClear = e.target.closest('li');
+            const itemToClear = elem;
             itemToClear.remove();
 
             if(!ul.children.length){
@@ -120,7 +122,15 @@
             db.close();
 
         };
-        
+
+        function openEditPage(elem){
+
+            console.log(elem)
+            console.log(elem.id)
+
+            //ipcRenderer.send('routing:editPage');
+        }
+
         function createListItem(db_id, item){
         
             let tempRow = `<li class="collection-item" id="${db_id}">
@@ -128,16 +138,22 @@
                     <span>${item}</span>
                 </label>
                 <span class="badge">
-                    <i class="material-icons">edit</i>
-                    <i id="clearItem" class="material-icons">clear</i>
+                    <i id="editBtn" class="material-icons" onclick='openEditPage(this.closest("li"));'>edit</i>
+                    <i id="clearItem" class="material-icons" onclick='removeItem(this.closest("li"));'>clear</i>
                 </span>
             </li>`
             const ul = document.querySelector('ul');
             ul.className = 'collection';
             ul.innerHTML += tempRow;
 
-            let currItem = document.querySelector("li[id*='" + db_id +"'] i[id*='clearItem']");
-            currItem.addEventListener('click', removeItem);
+            // let editBtn = document.querySelector("li[id*='" + db_id +"'] i[id*='editBtn']");
+            // editBtn.addEventListener('click', openEditPage)
+
+            // let currItem = document.querySelector("li[id*='" + db_id +"'] i[id*='clearItem']");
+            // console.log(currItem);
+            // //currItem.addEventListener('click', removeItem(db_id));
+            // currItem.addEventListener('click', removeItem);
+            
         }
 
     </script>
