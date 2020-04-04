@@ -40,10 +40,11 @@ function initLandingPage(){
     Menu.setApplicationMenu(mainMenu);
 }
 
+
 function createAddWindow(){
     addWindow = new BrowserWindow({
-        //width: 600,
-        //height: 400,
+        width: 784,
+        height: 450,
         Title: 'Alkalmazott hozzáadása',
         webPreferences: {
             nodeIntegration: true
@@ -80,6 +81,9 @@ ipcMain.on('item:add', (e, item) =>{
 ipcMain.on('employee:add', (e, personalData) =>{
     mainWindow.webContents.send('employee:add', personalData);
     addWindow.close();
+})
+ipcMain.on('routing:addWindow', (e) =>{
+    createAddWindow();
 })
 
 ipcMain.on('routing:workers', (e) =>{
@@ -156,24 +160,7 @@ if (process.platform == 'darwin') {
     mainMenuTemplate.unshift({});
     workersMenuTemplate.unshift({});
 }
-// let devToolMenu = [
-//     {
-//         label: 'Developer tools',
-//         submenu : [
-//             {
-//                 label: 'Toggle DevTools',
-//                 accelerator: process.platform=='darwin' ? 'Command+I' : 'Ctrl+I',
-//                 click(item, focusedWindow){
-//                     //focusedWindow.webContents.openDevTools()
-//                     focusedWindow.toggleDevTools();
-//                 }
-//             },
-//             {
-//                 role: 'reload'
-//             }
-//         ]
-//     }
-// ]
+
 //Add developer tools item if not prod mode
 if(process.env.NODE_ENV !== 'production'){
     const devTool = {

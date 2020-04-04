@@ -10,15 +10,12 @@
 }
 
 body{
-    background-color: #444;
+    /*background-color: #444;*/
+    background-color:#202123;
 }
 .nav-wrapper{
-    /*background-color: #26a69a;*/
-    background-color: #03DAC6;  
-}
-
-.nav-wrapper a{
-    color: #000;
+    background-color: #26a69a;
+    /*background-color: #03DAC6;  */
 }
 
 input{
@@ -40,12 +37,13 @@ label{
     color: #fff;
 }
 .collection .collection-item {
-    background-color: #5a5a5a;
+    /*background-color: #5a5a5a;*/
+    background-color: #444;
     color: #fff;
-    border-bottom: 0.5px solid #9e9e9e;
+    border-bottom: 1px solid #202123;
 }
 .collection {
-    border: 1px solid #9e9e9e;
+    border: 1px solid #202123;
 }
 span.badge {
     color: #fff;
@@ -55,4 +53,22 @@ ul.collection{
 }
 label:hover, i:hover{
     color: #03DAC6;
+}
+
+.row .col{
+    padding: .75rem;
+}
+.row {
+    overflow: hidden;
+}
+
+.open{
+    top: 1% !important;
+}
+
+.card{
+    background-color: #444;
+}
+.card .material-icons, .desc{
+    color: #26a69a;
 }
