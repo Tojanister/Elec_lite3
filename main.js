@@ -87,7 +87,9 @@ ipcMain.on('employee:edit', (e, personalData) =>{
 ipcMain.on('routing:addWindow', (e) =>{
     createAddWindow();
 })
-
+ipcMain.on('routing:cancelAddWindow', (e) =>{
+    addWindow.close();
+})
 ipcMain.on('routing:editPage', (e, allDataEditable) =>{
     createAddWindow();
 

@@ -35,7 +35,8 @@
               <label for="email">Email</label>
             </div>
           </div>
-          <button class="btn waves-effect waves-light" type="submit" name='action'>Hozzáadás</button>
+          <button id="submitBtn" class="btn waves-effect waves-light" type="submit" name='action'><i class="material-icons left">add</i>Hozzáad</button>
+          <button id="cancelBtn" class="btn waves-effect waves-light" type="button"><i class="material-icons left">undo</i>Mégse</button>
         </form>
 
       </div>    
@@ -49,6 +50,7 @@
       ipcRenderer.on('routing:editPage', (e, allDataEditable) => {
 
         isEditable = true;
+        document.querySelector('button[type=submit]').innerText = "Módosít";
         loadItemsToEdit(allDataEditable);
 
       });
@@ -97,6 +99,13 @@
             var instance = M.Datepicker.init(elems, options);
             instance.setDate(new Date());
         });
+
+        const cancel = document.querySelector('#cancelBtn');
+        cancel.addEventListener('click', cancelForm);
+        
+        function cancelForm(){
+          ipcRenderer.send('routing:cancelAddWindow');
+        }
 
         const form = document.querySelector('form');
         form.addEventListener('submit', submitFrom);
