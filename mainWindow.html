@@ -20,7 +20,7 @@
       
       <div class="fixed-action-btn">
         <a class="btn-floating btn-large">
-          <i class="large material-icons">mode_edit</i>
+          <i class="large material-icons">person_add</i>
         </a>
         <!--
         <ul>
@@ -99,11 +99,7 @@
         }
         const {ipcRenderer} = require('electron');
         const ul = document.querySelector('ul');
-        /*
-        ipcRenderer.on('item:add', (e, item) => {
-            InsertDB(item);
-        });
-        */
+
         ipcRenderer.on('employee:add', (e, personalData) => {
             InsertDB(personalData);
         });
@@ -115,8 +111,6 @@
 
         function removeItem(elem){
 
-            //const itemToClear = document.getElementById(db_id.toString());
-            // const itemToClear = e.target.closest('li');
             const itemToClear = elem;
             itemToClear.remove();
 
@@ -128,7 +122,6 @@
                 if (err)  throw err;
             }); 
 
-            //let stmt = db.prepare("DELETE FROM Lists WHERE id = (?)");
             let stmt = db.prepare("DELETE FROM Employees WHERE id = (?)");
             stmt.run(itemToClear.id, function (err) {
                 if (err) throw err;
@@ -141,10 +134,25 @@
 
         function openEditPage(elem){
 
-            console.log(elem)
             console.log(elem.id)
 
-            //ipcRenderer.send('routing:editPage');
+            let db = new sqlite3.Database('./Database/testDB.db', (err) => {
+                if (err) {
+                    console.log(err);
+                }
+            });    
+            //'id, first_name, last_name, birth_date, email'    
+            //let stmt = db.prepare("SELECT * FROM Employees WHERE id = ?");
+            let sql = "SELECT * FROM Employees WHERE id = ?";
+            db.get(sql, [elem.id], (err, row)=>{
+                if (err) {
+                    console.log(err);
+                }else{
+                    ipcRenderer.send('routing:editPage', row);                    
+                }
+            });
+
+            db.close();  
         }
 
         function createListItem(db_id, item){

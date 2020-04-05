@@ -18,7 +18,10 @@ function initLandingPage(){
     mainWindow = new BrowserWindow({
         webPreferences: {
             nodeIntegration: true
-        }
+        },
+        backgroundColor: '#202123',
+        autoHideMenuBar: true
+        //darkTheme: true
     }); 
     //load html into window | mainWindow.loadFile('mainWindow.html')
     mainWindow.loadURL(url.format({
@@ -27,6 +30,7 @@ function initLandingPage(){
         protocol: 'file:',
         slashes: true
     }));
+
 
     //mainWindow.webContents.openDevTools();
 
@@ -51,13 +55,7 @@ function createAddWindow(){
         }
     }); 
 
-    // //Build menu from tempalte
-    // let addMenu = Menu.buildFromTemplate(devToolMenu);
-    // //Insert menu
-    // Menu.setApplicationMenu(addMenu);
-
     addWindow.loadURL(url.format({
-        //pathname: path.join(__dirname, 'addWindow.html'),
         pathname: path.join(__dirname, 'addEmployeeWindow.html'),
         protocol: 'file:',
         slashes: true
@@ -71,8 +69,6 @@ function createAddWindow(){
     })
 }
 
-//app.allowRendererProcessReuse = true;
-
 //catch item:add
 ipcMain.on('item:add', (e, item) =>{
     mainWindow.webContents.send('item:add', item);
@@ -84,6 +80,14 @@ ipcMain.on('employee:add', (e, personalData) =>{
 })
 ipcMain.on('routing:addWindow', (e) =>{
     createAddWindow();
+})
+ipcMain.on('routing:editPage', (e, allDataEditable) =>{
+    createAddWindow();
+
+    addWindow.webContents.once('dom-ready', () => {
+        addWindow.webContents.send('routing:editPage', allDataEditable);
+    })
+
 })
 
 ipcMain.on('routing:workers', (e) =>{
@@ -97,6 +101,9 @@ ipcMain.on('routing:workers', (e) =>{
         protocol: 'file:',
         slashes: true
     }));
+    mainWindow.webContents.on('did-finish-load', () => {
+        mainWindow.show();
+    });  
 
 })
 ipcMain.on('routing:landing', (e) =>{

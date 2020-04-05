@@ -42,19 +42,42 @@
 
     <script>
 
-      const isEditable = (document.getElementById("curr_ID_hid").value != "") ? true : false;
-      console.log(isEditable);
+    const {ipcRenderer} = require('electron');
+
+      let isEditable = false;
+
+      ipcRenderer.on('routing:editPage', (e, allDataEditable) => {
+
+        let isEditable = true;
+        loadItemsToEdit(allDataEditable);
+
+      });
+
+
+      function loadItemsToEdit(row){
+
+        let id = document.getElementById("curr_ID_hid");
+        let firstName = document.getElementById("first_name");
+        let lastName = document.getElementById("last_name");
+        let birthDate = document.getElementById("birth_date");
+        let email = document.getElementById("email");
+        
+        id.value = row.id;
+        firstName.value = row.first_name;
+        lastName.value = row.last_name;
+        birthDate.value = row.birth_date;
+        email.value = row.email;
+      }
 
         document.addEventListener('DOMContentLoaded', function () {
             var options = {
-                defaultDate: new Date(),
+                defaultDate: (isEditable) ? new Date(birthDate) : new Date(),
                 setDefaultDate: true,
                 maxDate: new Date(),
                 minDate: new Date('1950-01-01'),
                 yearRange: [1950,2020],
                 changeMonth: true,
                 changeYear: true,
-                //format: 'dd-mm-yyyy',
                 format: 'yyyy-mm-dd',
                 i18n: {
                     cancel: 'Mégse',
@@ -69,13 +92,8 @@
             };
             var elems = document.querySelector('.datepicker');
             var instance = M.Datepicker.init(elems, options);
-            // instance.open();
-            //instance.setDate(new Date(2018, 2, 8));
             instance.setDate(new Date());
-            //instance.options.minDate = new Date('1950-01-01');
         });
-
-        const {ipcRenderer} = require('electron');
 
         const form = document.querySelector('form');
         form.addEventListener('submit', submitFrom);
