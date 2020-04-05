@@ -48,7 +48,7 @@
 
       ipcRenderer.on('routing:editPage', (e, allDataEditable) => {
 
-        let isEditable = true;
+        isEditable = true;
         loadItemsToEdit(allDataEditable);
 
       });
@@ -118,9 +118,11 @@
 
             personalData.push(first_name, last_name, birth_date, email);
 
-            console.log("employee:" + (isEditable) ? "edit" : "add");
+            let addOrEdit =  "employee:";
+            addOrEdit += (isEditable) ? "edit" : "add";
+
             //ITT A HIBA:
-            ipcRenderer.send('employee:' + (isEditable) ? 'edit' : 'add', personalData);
+            ipcRenderer.send(addOrEdit, personalData);
             
         }
 

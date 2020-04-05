@@ -73,11 +73,13 @@ function createAddWindow(){
 //CATCH IPCs
 
 ipcMain.on('employee:add', (e, personalData) =>{
+    console.log("ADD",personalData)
     mainWindow.webContents.send('employee:add', personalData);
     addWindow.close();
 })
 
 ipcMain.on('employee:edit', (e, personalData) =>{
+    console.log("EDIT",personalData)
     mainWindow.webContents.send('employee:edit', personalData);
     addWindow.close();
 })

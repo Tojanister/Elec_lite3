@@ -106,15 +106,16 @@
                 }
             });
             let stmt = db.prepare("UPDATE Employees SET first_name = ?, last_name = ?, birth_date = ?, email = ? WHERE id = ?");         
-
-            stmt.run([person.first_name, person.last_name, person.birth_date, person.email, person.id ], function (err) {
+            stmt.run([person[1], person[2], person[3], person[4], person[0] ], function (err) {
                 if (err) throw err;
 
-                console.log('asdasdasdasdasd');
+                console.log(person[1] + ' ' + person[2],' UPDATED.');
             });            
             
             stmt.finalize();
             db.close();
+            
+            document.querySelector(`ul [id*="${person[0]}"] label`).innerHTML = person[1] + ' ' + person[2];
         }
 
         const {ipcRenderer} = require('electron');
@@ -125,6 +126,7 @@
         });
 
         ipcRenderer.on('employee:edit', (e, personalData) => {
+            console.log("EDIT",personalData)
             UpdateDB(personalData);
         });
 
