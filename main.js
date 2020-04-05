@@ -69,18 +69,23 @@ function createAddWindow(){
     })
 }
 
-//catch item:add
-ipcMain.on('item:add', (e, item) =>{
-    mainWindow.webContents.send('item:add', item);
-    addWindow.close();
-})
+//-------------------------------------------------------------------------------------
+//CATCH IPCs
+
 ipcMain.on('employee:add', (e, personalData) =>{
     mainWindow.webContents.send('employee:add', personalData);
     addWindow.close();
 })
+
+ipcMain.on('employee:edit', (e, personalData) =>{
+    mainWindow.webContents.send('employee:edit', personalData);
+    addWindow.close();
+})
+
 ipcMain.on('routing:addWindow', (e) =>{
     createAddWindow();
 })
+
 ipcMain.on('routing:editPage', (e, allDataEditable) =>{
     createAddWindow();
 
@@ -106,6 +111,7 @@ ipcMain.on('routing:workers', (e) =>{
     });  
 
 })
+
 ipcMain.on('routing:landing', (e) =>{
 
     //Build menu from tempalte
@@ -118,7 +124,9 @@ ipcMain.on('routing:landing', (e) =>{
         protocol: 'file:',
         slashes: true
     }));
+
 })
+//-------------------------------------------------------------------------------------
 
 //create menu tempalte
 const workersMenuTemplate = [

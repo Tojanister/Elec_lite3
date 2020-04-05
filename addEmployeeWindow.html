@@ -53,7 +53,6 @@
 
       });
 
-
       function loadItemsToEdit(row){
 
         let id = document.getElementById("curr_ID_hid");
@@ -64,9 +63,13 @@
         
         id.value = row.id;
         firstName.value = row.first_name;
+        firstName.nextElementSibling.className = 'active';
         lastName.value = row.last_name;
+        lastName.nextElementSibling.className = 'active';
         birthDate.value = row.birth_date;
+        //birthDate.nextElementSibling.className = 'active';
         email.value = row.email;
+        email.nextElementSibling.className = 'active';
       }
 
         document.addEventListener('DOMContentLoaded', function () {
@@ -103,13 +106,21 @@
 
             let personalData = [];
 
+            if( isEditable ){
+              const id = document.querySelector('#curr_ID_hid').value;
+              personalData.push(id);
+            }
+             
             const first_name = document.querySelector('#first_name').value;
             const last_name = document.querySelector('#last_name').value;
             const birth_date = document.querySelector('#birth_date').value;
             const email = document.querySelector('#email').value;
 
             personalData.push(first_name, last_name, birth_date, email);
-            ipcRenderer.send('employee:add', personalData);
+
+            console.log("employee:" + (isEditable) ? "edit" : "add");
+            //ITT A HIBA:
+            ipcRenderer.send('employee:' + (isEditable) ? 'edit' : 'add', personalData);
             
         }
 

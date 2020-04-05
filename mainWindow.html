@@ -97,11 +97,35 @@
             stmt.finalize();
             db.close();
         }
+
+        function UpdateDB(person){
+            
+            let db = new sqlite3.Database('./Database/testDB.db', (err) => {
+                if (err) {
+                    console.error(err.message);
+                }
+            });
+            let stmt = db.prepare("UPDATE Employees SET first_name = ?, last_name = ?, birth_date = ?, email = ? WHERE id = ?");         
+
+            stmt.run([person.first_name, person.last_name, person.birth_date, person.email, person.id ], function (err) {
+                if (err) throw err;
+
+                console.log('asdasdasdasdasd');
+            });            
+            
+            stmt.finalize();
+            db.close();
+        }
+
         const {ipcRenderer} = require('electron');
         const ul = document.querySelector('ul');
 
         ipcRenderer.on('employee:add', (e, personalData) => {
             InsertDB(personalData);
+        });
+
+        ipcRenderer.on('employee:edit', (e, personalData) => {
+            UpdateDB(personalData);
         });
 
         ipcRenderer.on('item:clear', () => {
