@@ -15,19 +15,23 @@
         <form class="col s12">
           <input id="curr_ID_hid" type="hidden">
           <div class="row">
-            <div class="input-field col s4">
+            <div class="input-field col s3">
               <i class="material-icons prefix">account_circle</i>
               <input id="first_name" type="text" class="validate">
               <label for="first_name">Vezetéknév</label>
             </div>
-            <div class="input-field col s4">
+            <div class="input-field col s3">
               <input id="last_name" type="text" class="validate">
               <label for="last_name">Keresztnév</label>
             </div>
-            <div class="input-field col s4">
+            <div class="input-field col s3">
                 <input id="birth_date" type="text" class="datepicker">
                 <label for="birth_date">Születési dátum</label>
             </div>
+            <div class="input-field col s3">
+              <input id="monthly_pay" type="number" class="validate">
+              <label for="monthly_pay">Fix havi bér</label>
+          </div>            
           </div>
           <div class="row">
             <div class="input-field col s12">
@@ -61,6 +65,7 @@
         let firstName = document.getElementById("first_name");
         let lastName = document.getElementById("last_name");
         let birthDate = document.getElementById("birth_date");
+        let monthlyPay = document.getElementById("monthly_pay");
         let email = document.getElementById("email");
         
         id.value = row.id;
@@ -70,6 +75,8 @@
         lastName.nextElementSibling.className = 'active';
         birthDate.value = row.birth_date;
         //birthDate.nextElementSibling.className = 'active';
+        monthlyPay.value = row.monthly_pay;
+        monthlyPay.nextElementSibling.className = 'active';
         email.value = row.email;
         email.nextElementSibling.className = 'active';
       }
@@ -102,7 +109,7 @@
 
         const cancel = document.querySelector('#cancelBtn');
         cancel.addEventListener('click', cancelForm);
-        
+
         function cancelForm(){
           ipcRenderer.send('routing:cancelAddWindow');
         }
@@ -123,9 +130,10 @@
             const first_name = document.querySelector('#first_name').value;
             const last_name = document.querySelector('#last_name').value;
             const birth_date = document.querySelector('#birth_date').value;
+            const monthly_pay = document.querySelector('#monthly_pay').value;
             const email = document.querySelector('#email').value;
 
-            personalData.push(first_name, last_name, birth_date, email);
+            personalData.push(first_name, last_name, birth_date, monthly_pay, email);
 
             let addOrEdit =  "employee:";
             addOrEdit += (isEditable) ? "edit" : "add";

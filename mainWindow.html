@@ -10,11 +10,11 @@
 </head>
 <body>
     <nav>
-        <div class="nav-wrapper">
-            <a id="backBtn" class="waves-effect waves-light"><i class="material-icons left">keyboard_arrow_left</i>Vissza</a>
-          <a href="#" class="brand-logo center">Munkavállalók listája</a>
-        </div>
-      </nav>
+    <div class="nav-wrapper">
+        <a id="backBtn" class="waves-effect waves-light"><i class="material-icons left">keyboard_arrow_left</i>Vissza</a>
+        <a href="#" class="brand-logo center">Munkavállalók listája</a>
+    </div>
+    </nav>
 
       <ul></ul>
       
@@ -31,6 +31,15 @@
         </ul>
         -->
       </div>
+  
+    <footer>
+        <div id="last_action_wrapper">
+            <span id="last_action">Legutóbbi tevékenység:</span>
+            <div>
+                <span id="event_log"></span>
+            </div>       
+        </div> 
+    </footer>
 
     <script>
         const backButton = document.getElementById("backBtn");
@@ -61,37 +70,88 @@
                 }
             });    
 
-            db.run("CREATE TABLE if not exists Employees (id INTEGER PRIMARY KEY AUTOINCREMENT, first_name TEXT NOT NULL, last_name TEXT NOT NULL, birth_date TEXT, email TEXT)");
+            db.run("CREATE TABLE if not exists Employees (id INTEGER PRIMARY KEY AUTOINCREMENT, first_name TEXT NOT NULL, last_name TEXT NOT NULL, birth_date TEXT, monthly_pay INTEGER, email TEXT)");
+            db.run("CREATE TABLE if not exists LOG (eventID INTEGER PRIMARY KEY AUTOINCREMENT, employee_id INTEGER NOT NULL, event_desc TEXT, event_date DATE, FOREIGN KEY(employee_id) REFERENCES Employees(id))");
             
-            const sql = "SELECT * FROM Employees";
-            db.all(sql, [], (err, rows) => {
+            let sql = "SELECT * FROM Employees";
+
+            db.serialize(() => {
+                db.all(sql, [], (err, rows) => {
                 if (err) {
                     console.log(err);
                 }else{
                     rows.forEach((row) => {
-                        //createListItem(row.id,row.list_items);
                         createListItem(row.id,row.first_name + ' ' + row.last_name);
                     });
                 }
+                });
+                sql = `SELECT emp.first_name, emp.last_name,
+                log.event_date, log.event_desc
+                FROM LOG as log
+                INNER JOIN Employees as emp
+                ON emp.id = log.employee_id
+                ORDER BY eventID
+                DESC LIMIT 1`;
+                
+                db.get(sql, [], (err, row)=>{
+                    if (err) {
+                        console.log(err);
+                    }
+                    document.getElementById("event_log").innerText = row.event_date + ' - ' + '['+ row.first_name + ' ' + row.last_name +'] ' + row.event_desc;
+                });
+
+            })
+
+            //updateEventLog(db);
+            db.close();
+        })();
+/*
+        function updateEventLog(db){
+
+            let sql = `SELECT emp.first_name, emp.last_name,
+             log.event_date, log.event_desc
+             FROM LOG as log
+             INNER JOIN Employees as emp
+             ON emp.id = log.employee_id
+             ORDER BY eventID
+             DESC LIMIT 1`;
+            
+            db.get(sql, [], (err, row)=>{
+                if (err) {
+                    console.log(err);
+                }
+                document.getElementById("event_log").innerText = row.event_date + ' - ' + '['+ row.first_name + ' ' + row.last_name +'] ' + row.event_desc;
             });
 
-            db.close();        
-        })();
-
+        }
+*/
         function InsertDB(person){
             
             let db = new sqlite3.Database('./Database/testDB.db', (err) => {
                 if (err) {
                     console.error(err.message);
                 }
-            });       
-            //db.run("CREATE TABLE if not exists Employees (id INTEGER PRIMARY KEY AUTOINCREMENT, first_name TEXT NOT NULL, last_name TEXT NOT NULL, birth_date TEXT, email TEXT)");
-            let stmt = db.prepare("INSERT INTO Employees (first_name, last_name, birth_date, email) VALUES (?, ?, ?, ?)");            
-            stmt.run(person, function (err) {
-                if (err) throw err;
+            });      
 
-                let fullName = person[0] + ' ' + person[1];
-                createListItem(this.lastID, fullName);
+            db.serialize(() => {
+                //db.run("CREATE TABLE if not exists Employees (id INTEGER PRIMARY KEY AUTOINCREMENT, first_name TEXT NOT NULL, last_name TEXT NOT NULL, birth_date TEXT, email TEXT)");
+                let stmt = db.prepare("INSERT INTO Employees (first_name, last_name, birth_date, monthly_pay, email) VALUES (?, ?, ?, ?, ?)");            
+                stmt.run(person, function (err) {
+                    if (err) throw err;
+
+                    let fullName = person[0] + ' ' + person[1];
+                    createListItem(this.lastID, fullName);
+
+                    let stmtLog = db.prepare("INSERT INTO LOG (employee_id, event_desc, event_date) VALUES (?, ?, CURRENT_TIMESTAMP)");           
+                    stmtLog.run([this.lastID, 'Added to DB.'], function (err) {
+                        if (err){
+                            stmt.finalize();
+                            db.close();
+                            throw err;
+                        }
+                    });  
+
+                });
             });
             
             stmt.finalize();
@@ -105,8 +165,8 @@
                     console.error(err.message);
                 }
             });
-            let stmt = db.prepare("UPDATE Employees SET first_name = ?, last_name = ?, birth_date = ?, email = ? WHERE id = ?");         
-            stmt.run([person[1], person[2], person[3], person[4], person[0] ], function (err) {
+            let stmt = db.prepare("UPDATE Employees SET first_name = ?, last_name = ?, birth_date = ?, monthly_pay = ?, email = ? WHERE id = ?");         
+            stmt.run([person[1], person[2], person[3], person[4], person[5], person[0] ], function (err) {
                 if (err) throw err;
 
                 console.log(person[1] + ' ' + person[2],' UPDATED.');
@@ -114,7 +174,7 @@
             
             stmt.finalize();
             db.close();
-            
+
             document.querySelector(`ul [id*="${person[0]}"] label`).innerHTML = person[1] + ' ' + person[2];
         }
 
@@ -195,6 +255,7 @@
             const ul = document.querySelector('ul');
             ul.className = 'collection';
             ul.innerHTML += tempRow;
+          
         }
 
     </script>

@@ -13,6 +13,11 @@ body{
     /*background-color: #444;*/
     background-color:#202123;
 }
+ul{
+    height: 400px;
+    overflow-x: hidden;
+    overflow-y: auto !important;
+}
 .nav-wrapper{
     background-color: #26a69a;
     /*background-color: #03DAC6;  */
@@ -71,4 +76,15 @@ label:hover, i:hover{
 }
 .card .material-icons, .desc{
     color: #26a69a;
+}
+
+#last_action_wrapper{
+    position: fixed;
+    left: 1%;
+    bottom: 23px;
+    padding-top: 15px;
+    margin-bottom: 0;
+    /*z-index: 996;*/
+    color: wheat;
+    font-size: 12px;
 }

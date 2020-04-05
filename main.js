@@ -47,12 +47,13 @@ function initLandingPage(){
 
 function createAddWindow(){
     addWindow = new BrowserWindow({
-        width: 784,
+        width: 770,
         height: 450,
         Title: 'Alkalmazott hozzáadása',
         webPreferences: {
             nodeIntegration: true
-        }
+        },
+        frame: false
     }); 
 
     addWindow.loadURL(url.format({
